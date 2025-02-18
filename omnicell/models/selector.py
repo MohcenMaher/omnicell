@@ -78,7 +78,7 @@ def load_model(model_config: ModelConfig, loader: DataLoader, pert_embedding: Di
         from omnicell.models.scot.proportional import ProportionalSCOT
         logger.info("Proportional SCOT model selected")
         adata_cheat = loader.get_complete_training_dataset()
-        model = ProportionalSCOT(adata_cheat)
+        model = ProportionalSCOT(adata_cheat, pert_embedding, model_parameters)
 
     elif "scot" in model_name:
         from omnicell.models.scot.scot import SCOT
@@ -95,6 +95,12 @@ def load_model(model_config: ModelConfig, loader: DataLoader, pert_embedding: Di
         from omnicell.models.Autoencoder.model import autoencoder
         logger.info("Autoencoder model selected")
         model = autoencoder(model_parameters, input_dim)
+
+    elif "sparsity_gt" in model_name:
+        from omnicell.models.dummy_predictors.sparsity_gt import SparsityGroundTruthPredictor
+        logger.info("Sparsity GT model selected")
+        adata_cheat = loader.get_complete_training_dataset()
+        model = SparsityGroundTruthPredictor(adata_cheat)
 
     else:
         raise ValueError(f'Unknown model name {model_name}')

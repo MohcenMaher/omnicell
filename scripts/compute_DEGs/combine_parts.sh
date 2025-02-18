@@ -2,7 +2,7 @@
 #SBATCH -t 12:00:00
 #SBATCH --ntasks-per-node=1
 #SBATCH -p newnodes
-#SBATCH --mem=50GB
+#SBATCH --mem=100GB
 #SBATCH --array=0-9 # 10 datasets
 hostname
 

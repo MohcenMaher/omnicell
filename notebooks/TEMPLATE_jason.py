@@ -70,58 +70,11 @@ pert_rep_map_idxs = {pert: pert_list.index(pert) for pert in adata.obs[PERT_KEY]
 
 import numpy as np
 
-def sum_in_pairs(arr, idx):
-    """
-    Given an array of shape (512, n_features) and a random permutation idx
-    of length 512, return a new array of shape (256, n_features),
-    where each row i is the sum of arr[idx[2*i]] and arr[idx[2*i+1]].
-    
-    Note: If arr is int16, you may want to cast to a larger type
-    (e.g. int32 or float32) to avoid integer overflow.
-    """
-    summed = arr[idx[0::2]] + arr[idx[1::2]]
-    return summed
 
-def create_2x_summed_dict(npz):
-    """
-    Given the original dictionary `npz`, create a new dictionary
-    where each (512, n_features) array is summed into (256, n_features)
-    using random pairing. The same pairing is used for source and 
-    all perturbation arrays.
-
-    This function also copies 'unique_pert_ids' and 'strata' over intact.
-    """
-    # 1) Generate a single random permutation of 512
-    idx = np.random.permutation(512)
-    
-    # 2) Build the new dictionary structure
-    new_npz = {}
-    
-    # 2a) Handle the "source" data
-    if 'source' in npz:
-        new_npz['source'] = {}
-        for cell_type, arr in npz['source'].items():
-            new_npz['source'][cell_type] = sum_in_pairs(arr, idx)
-    
-    # 2b) Handle the "synthetic_counterfactuals"
-    if 'synthetic_counterfactuals' in npz:
-        new_npz['synthetic_counterfactuals'] = {}
-        for cell_type, gene_dict in npz['synthetic_counterfactuals'].items():
-            new_npz['synthetic_counterfactuals'][cell_type] = {}
-            for gene_name, arr in gene_dict.items():
-                new_npz['synthetic_counterfactuals'][cell_type][gene_name] = sum_in_pairs(arr, idx)
-    
-    # 3) Copy 'unique_pert_ids' and 'strata' if they exist
-    for key in ['unique_pert_ids', 'strata']:
-        if key in npz:
-            new_npz[key] = npz[key]
-    
-    return new_npz
 
 npz = np.load("/orcd/data/omarabu/001/Omnicell_datasets/repogle_k562_essential_raw/proportional_scot/synthetic_counterfactuals_0.pkl", allow_pickle=True)
-npz = create_2x_summed_dict(npz)
 
-from omnicell.models.datamodules import StratifiedBatchSampler
+from omnicell.models.utils.datamodules import StratifiedBatchSampler
 
 class PairedStratifiedDataset(torch.utils.data.Dataset):
     def __init__(

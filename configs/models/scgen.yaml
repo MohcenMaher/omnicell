@@ -1,0 +1,11 @@
+name: vae_scgen
+model:
+  latent_dim: 100
+  hidden_dim: 800
+
+training:
+  dropout_rate: 0.2
+  learning_rate: 0.001
+  alpha: 0.00005
+  epochs: 100
+  batsize: 32

@@ -7,6 +7,6 @@ training:
   dropout_rate: 0.2
   learning_rate: 0.001
   alpha: 0.001
-  epochs: 200
-  delta_predictor_epochs: 100
-  batsize: 32
+  epochs: 50
+  delta_predictor_epochs: 300
+  batsize: 128
